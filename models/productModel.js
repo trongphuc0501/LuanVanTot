@@ -27,7 +27,7 @@ const Products = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false
     },
-    product_hot: {
+    hot: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
