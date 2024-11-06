@@ -9,52 +9,115 @@ exports.getAllUsers = async (req, res) => {
     const accounts = await Account.findAll();
     res.json(accounts);
   } catch (error) {
-    res.status(500).send(error.message);
+    console.error("Error fetching users:", error);
+    res.status(500).send("Có vấn đề trong việc lấy danh sách người dùng");
   }
 };
 
 exports.Dangnhap = async (req, res) => {
   try {
+    // Tìm người dùng trong cơ sở dữ liệu dựa trên email
     const user = await Account.findOne({ where: { name: req.body.name } });
-    if (!user) {
-      return res.status(404).send("Người dùng không tồn tại");
-    }
 
-    const passwordMatch = await bcrypt.compare(req.body.password, user.password);
-    if (!passwordMatch) {
+    if (!user) {
+      return res.status(404).send("Nguoi dung không tồn tại");
+    }
+    console.log(user.dataValues.password)
+
+    if(req.body.password != user.dataValues.password){
       return res.status(401).send({ auth: false, token: null });
     }
+    // Tạo mã token
+    const token = jwt.sign({ id: user.id }, secret, {
+      expiresIn: '24h'
+    });
 
-    const token = jwt.sign({ id: user.id }, secret, { expiresIn: '24h' });
+    // Trả về token trong phản hồi
     res.status(200).json({ auth: true, token });
-  } catch (error) {
+  } catch (e) {
+    console.log(e);
     res.status(500).send('Có vấn đề trong quá trình đăng nhập');
   }
 };
-
-exports.createUser = async (req, res) => {
+exports.createAccount = async (req, res) => {
   try {
-    const { name, email, phone_number, address, password, role } = req.body;
-    if (!name || !email || !phone_number || !address || !password || !role) {
-      return res.status(400).json({ error: "Thiếu thông tin" });
+    const requiredFields = [
+      "name",
+      "email",
+      "phone_number",
+      "address",
+      "password",
+      "role"
+    ];
+
+    const missingFields = requiredFields.filter(field => !req.body[field]);
+
+    if (missingFields.length > 0) {
+      return res.status(400).json({
+        error: "Thiếu thông tin",
+        missingFields: missingFields
+      });
     }
 
+    const { email, password } = req.body;
+
+    // Kiểm tra định dạng email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return res.status(400).json({ error: "Email không hợp lệ" });
+      return res.status(400).json({
+        error: "Email không hợp lệ"
+      });
     }
 
+    // Kiểm tra độ dài mật khẩu
     if (password.length < 6) {
-      return res.status(400).json({ error: "Mật khẩu phải có ít nhất 6 ký tự" });
+      return res.status(400).json({
+        error: "Mật khẩu phải có ít nhất 6 ký tự"
+      });
     }
 
+    // Kiểm tra xem email đã tồn tại chưa
+    const existingUser = await Account.findOne({ where: { email } });
+    if (existingUser) {
+      return res.status(400).json({
+        error: "Email đã tồn tại"
+      });
+    }
+
+    // Mã hóa mật khẩu
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await Account.create({ ...req.body, password: hashedPassword });
-    res.status(201).json(user);
+
+    const userData = {
+      ...req.body,
+      password: hashedPassword,
+    };
+
+    // Tạo tài khoản mới
+    const user = await Account.create(userData);
+    res.status(201).json({
+      message: "Tài khoản đã được tạo thành công",
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        phone_number: user.phone_number,
+        address: user.address,
+        role: user.role
+      }
+    });
   } catch (error) {
-    res.status(500).send(error.message);
+    if (error.name === 'SequelizeValidationError') {
+      res.status(400).json({
+        error: "Lỗi xác thực",
+        details: error.errors.map(e => e.message)
+      });
+    } else {
+      console.error("Error creating account:", error);
+      res.status(500).send("Có vấn đề trong việc tạo tài khoản");
+    }
   }
 };
+
 
 exports.deleteUser = async (req, res) => {
   try {
@@ -65,7 +128,8 @@ exports.deleteUser = async (req, res) => {
     await user.destroy();
     res.status(200).send("User deleted successfully");
   } catch (error) {
-    res.status(500).send(error.message);
+    console.error("Error deleting user:", error);
+    res.status(500).send("Có vấn đề trong việc xóa người dùng");
   }
 };
 
@@ -86,6 +150,7 @@ exports.updateUser = async (req, res) => {
     await user.save();
     res.status(200).json(user);
   } catch (error) {
-    res.status(500).send(error.message);
+    console.error("Error updating user:", error);
+    res.status(500).send("Có vấn đề trong việc cập nhật người dùng");
   }
 };
