@@ -13,24 +13,31 @@ exports.getAllUsers = async (req, res) => {
     res.status(500).send("Có vấn đề trong việc lấy danh sách người dùng");
   }
 };
-
 exports.Dangnhap = async (req, res) => {
   try {
-    // Tìm người dùng trong cơ sở dữ liệu dựa trên email
+    // Tìm người dùng trong cơ sở dữ liệu dựa trên tên (name)
     const user = await Account.findOne({ where: { name: req.body.name } });
 
     if (!user) {
       return res.status(404).send("Nguoi dung không tồn tại");
     }
-    console.log(user.dataValues.password)
 
-    if(req.body.password != user.dataValues.password){
+    // Kiểm tra mật khẩu người dùng
+    if (req.body.password != user.dataValues.password) {
       return res.status(401).send({ auth: false, token: null });
     }
-    // Tạo mã token
-    const token = jwt.sign({ id: user.id }, secret, {
-      expiresIn: '24h'
-    });
+
+    // Tạo mã token, bao gồm id và role
+    const token = jwt.sign(
+      { 
+        id: user.id, 
+        role: user.dataValues.role  // Thêm role vào payload của token
+      },
+      secret,
+      {
+        expiresIn: '24h'  // Token có hiệu lực trong 24 giờ
+      }
+    );
 
     // Trả về token trong phản hồi
     res.status(200).json({ auth: true, token });
@@ -39,6 +46,7 @@ exports.Dangnhap = async (req, res) => {
     res.status(500).send('Có vấn đề trong quá trình đăng nhập');
   }
 };
+
 exports.createAccount = async (req, res) => {
   try {
     const requiredFields = [

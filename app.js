@@ -7,7 +7,7 @@ const accountRouter = require("./routers/accountRouter");
 // const roleRoutes = require("./routes/roleRoutes");
 const productsRouter = require("./routers/productsRoutes");
 // const uploadRouters =  require("./routes/uploadRoute");
-// const cartRoutes = require("./routes/cartRouter");
+const cartRouter = require("./routers/cartRouter");
 // const paymentRouter = require("./routes/paymentRouter");
 
 const app = express();
@@ -17,6 +17,7 @@ const port = 3000;
 app.use(express.json());
 app.use("/account", accountRouter);
 app.use("/products", productsRouter);
+app.use("/cart", cartRouter);
 
 sequelize
   .authenticate()
