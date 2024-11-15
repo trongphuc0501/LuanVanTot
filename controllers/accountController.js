@@ -93,12 +93,12 @@ exports.createAccount = async (req, res) => {
     }
 
     // Mã hóa mật khẩu
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // const hashedPassword = await bcrypt.hash(password, 10);
 
-    const userData = {
-      ...req.body,
-      password: hashedPassword,
-    };
+    // const userData = {
+    //   ...req.body,
+    //   password: hashedPassword,
+    // };
 
     // Tạo tài khoản mới
     const user = await Account.create(userData);
