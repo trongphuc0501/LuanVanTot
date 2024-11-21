@@ -1,4 +1,3 @@
-// models/user.js
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
 
@@ -13,27 +12,27 @@ const Products = sequelize.define(
     },
     name: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
     },
     price: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
     },
     img: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
     },
     description: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
     },
     hot: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
     },
     category_id: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
     },
   },
   {
@@ -41,5 +40,16 @@ const Products = sequelize.define(
     timestamps: false,
   }
 );
+
+Products.getProductsByCategory = async (category_id) => {
+  try {
+    const products = await Products.findAll({
+      where: { category_id },
+    });
+    return products;
+  } catch (err) {
+    throw new Error(err.message);
+  }
+};
 
 module.exports = Products;

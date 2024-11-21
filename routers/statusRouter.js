@@ -2,7 +2,10 @@ const express = require('express');
 const statusController = require('../controllers/statusController'); // Đảm bảo import đúng controller
 const router = express.Router();
 
-router.put("/updateStatus", statusController.updateOrderStatus);  // Sử dụng phương thức updateOrderStatus
-router.get('/orderStatus/:order_id', statusController.getOrderStatus);  // Sử dụng phương thức getOrderStatus
+router.put("/updateStatus", statusController.updateOrderStatus);  
+router.get('/all', statusController.getAllStatus); 
+router.post('/statusId/:account_id', statusController.getOrderStatusByAccountId);  
+router.post("/add", statusController.addOrderStatusFromCartOrder);
 
-module.exports = router;
+
+module.exports = router;    

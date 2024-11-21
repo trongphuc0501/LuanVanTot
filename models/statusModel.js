@@ -1,4 +1,3 @@
-// statusModel.js
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
 
@@ -11,15 +10,11 @@ const Status = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
+    order_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
     department: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    status: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    note: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -27,30 +22,69 @@ const Status = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    order_id: {
-      type: DataTypes.INTEGER,
+    status: {
+      type: DataTypes.STRING,
       allowNull: false,
+    },
+    updated_at: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    note: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    product_name: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    number_table: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    count: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
   },
   {
     tableName: "order_status",
-    timestamps: true, // Sequelize sẽ tự động thêm trường createdAt và updatedAt
-    updatedAt: 'updated_at', // Đặt tên cho trường thời gian cập nhật
-    createdAt: false, // Không cần trường created_at, nếu không muốn
+    timestamps: false,
   }
 );
 
-// Đặt phương thức updateStatus trong model Status
-Status.updateStatus = async (order_id, column, status) => {
+// Lấy trạng thái đơn hàng theo vai trò
+Status.getOrderStatusByAccountId = async (account_id) => {
   try {
-    // Cập nhật trạng thái trong cơ sở dữ liệu
-    await Status.update(
-      { [column]: status }, // Cập nhật trạng thái
-      { where: { order_id: order_id } } // Điều kiện tìm kiếm theo order_id
-    );
+    const result = await Status.findAll({
+      where: { account_id: account_id },
+      order: [["updated_at", "DESC"]], // Sắp xếp theo thời gian cập nhật mới nhất
+    });
+    return result;
   } catch (err) {
-    console.error("Lỗi cập nhật trạng thái:", err);
-    throw err; // Ném lỗi ra ngoài để controller có thể bắt lỗi
+    console.error("Lỗi lấy trạng thái theo account_id:", err.message);
+    throw err;
+  }
+};
+
+
+// Cập nhật trạng thái đơn hàng
+Status.updateStatus = async (order_id, department, status, account_id, note) => {
+  try {
+    const result = await Status.update(
+      {
+        department,
+        status,
+        account_id,
+        note,
+        updated_at: new Date(),
+      },
+      { where: { order_id: order_id } }
+    );
+    return result;
+  } catch (err) {
+    console.error("Lỗi trong model:", err.message);
+    throw err;
   }
 };
 

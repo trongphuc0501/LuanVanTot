@@ -10,14 +10,13 @@ router.get('/all', orderController.getAllOrder)
 router.get('/cart/:id', orderController.getOrderItemsByUserId);
 router.get('/table/:tableNumber', orderController.getOrderItemsByTableNumber);
 
-// Remove from Cart
+// Remove theo id
 router.delete('/id_table/:cartItemId', orderController.removeFromOrder);
 
 router.delete('/delete', orderController.removeAllFromOrder);
-
-// Update Cart Item
-// Trong file routes hoặc router.js
 router.put('/update-cart-item/:cartItemId', orderController.updateOrderItem);
+//chuyển dữ liệu
+router.post("/transfer", orderController.transferOrderToOrderStatus);
 
 
 module.exports = router;
