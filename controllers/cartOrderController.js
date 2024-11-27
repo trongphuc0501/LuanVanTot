@@ -124,7 +124,6 @@ const updateOrderItem = async (req, res) => {
     }
 };
 
-// Chuyển dữ liệu từ bảng CartOrder sang OrderStatus
 const transferOrderToOrderStatus = async (req, res) => {
     const { number_table, product_id, account_id } = req.body;
 
@@ -150,6 +149,7 @@ const transferOrderToOrderStatus = async (req, res) => {
                         note: null,
                         number_table: order.number_table,
                         count: order.count,
+                        price: order.price, 
                         product_name: order.product_name,
                     },
                     { transaction: t }

@@ -6,9 +6,8 @@ const Products = sequelize.define(
   {
     id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
       primaryKey: true,
-      autoIncrement: true, // Thiết lập tự tăng
+      autoIncrement: true,
     },
     name: {
       type: DataTypes.STRING,

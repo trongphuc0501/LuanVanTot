@@ -14,6 +14,10 @@ const CartOrder = sequelize.define(
         type: DataTypes.INTEGER,
         allowNull: false,
       },
+      price: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+      },
     date: {
         type: DataTypes.DATE,
         allowNull: false,
@@ -22,10 +26,6 @@ const CartOrder = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    price: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-      },
       product_name: {
       type: DataTypes.STRING,
       allowNull: false,

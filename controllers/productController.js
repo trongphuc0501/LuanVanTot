@@ -68,6 +68,12 @@ exports.createProduct = async (req, res) => {
       });
     }
 
+    if (req.body.id) {
+      return res.status(400).json({
+        error: "Khong can them id vao"
+      });
+    }
+
     if (Array.isArray(req.body)) {
       const createProduct = await Products.bulkCreate(req.body);
       res.status(201).json(createProduct);

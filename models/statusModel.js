@@ -46,6 +46,10 @@ const Status = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    price: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
   },
   {
     tableName: "order_status",
@@ -66,8 +70,6 @@ Status.getOrderStatusByAccountId = async (account_id) => {
     throw err;
   }
 };
-
-
 // Cập nhật trạng thái đơn hàng
 Status.updateStatus = async (order_id, department, status, account_id, note) => {
   try {
