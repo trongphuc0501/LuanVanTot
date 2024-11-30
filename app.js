@@ -23,6 +23,7 @@ app.use("/cart", cartRouter);
 app.use("/status", statusRouter);
 app.use("/orders", orderRouter);
 app.use("/paymentOrder", paymentOrderRouter);
+app.use("/category", accountRouter);
 
 sequelize
   .authenticate()
