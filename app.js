@@ -11,6 +11,7 @@ const cartRouter = require("./routers/cartRouter");
 const statusRouter = require("./routers/statusRouter");
 const orderRouter = require("./routers/cartOrderRouter");
 const paymentOrderRouter = require("./routers/paymentsRouter");
+const categoryRouter = require("./routers/categoryRouter")
 
 const app = express();
 app.use(cors());
@@ -23,7 +24,7 @@ app.use("/cart", cartRouter);
 app.use("/status", statusRouter);
 app.use("/orders", orderRouter);
 app.use("/paymentOrder", paymentOrderRouter);
-app.use("/category", accountRouter);
+app.use("/category", categoryRouter);
 
 sequelize
   .authenticate()
